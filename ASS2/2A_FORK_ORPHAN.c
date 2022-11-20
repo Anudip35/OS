@@ -48,16 +48,16 @@ int main(){
   for(int i = 0;i<n;i++) scanf("%d",&arr[i]);
   pid = fork();
   if(pid==0){
-  printf("\n****** CHILD PROCESS ********\n");
+  wait(NULL);
+    printf("\n****** CHILD PROCESS ********\n");
     printf("\nIt is child process with pid = %d and ppid = %d \n",getpid(),getppid());
     bubbleSort(arr,n);
     printf("\n ***** CHILD PROCESS TERMINATED *****");
   }
   else{
-  wait(NULL);
      printf("\n\n\n****** Parent PROCESS ********\n");
     printf("\nIt is parent process with pid = %d and ppid = %d \n",getpid(),getppid());
     selectionSort(arr,n);
-    printf("\n ***** PARENT PROCESS TERMINATED *****");
+    printf("\n ***** PARENT PROCESS TERMINATED *****\n\n");
   }
 }
