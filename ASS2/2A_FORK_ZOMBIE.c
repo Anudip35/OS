@@ -1,78 +1,63 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<sys/wait.h>
 
-void quick(int a[], int first, int last)
-{
-    int i, j, pivot, temp;
-    if (first < last)
-    {
-        pivot = first;
-        i = first;
-        j = last;
-
-        while (i < j)
-        {
-
-            while (a[i] <= a[pivot] && i < last)
-                i++;
-            while (a[j] > a[pivot])
-                j--;
-            if (i < j)
-            {
-                temp = a[i];
-                a[i] = a[j];
-                a[j] = temp;
+void bubbleSort(int arr[],int n){
+    for (int i = 0; i < n - 1; i++)
+        for (int j = 0; j < n - i - 1; j++)
+            if (arr[j] > arr[j + 1]){
+              int temp = arr[j];
+              arr[j] = arr[j+1];
+              arr[j+1] = temp;
             }
-        }
-
-        temp = a[pivot];
-        a[pivot] = a[j];
-        a[j] = temp;
-        quick(a, first, j - 1);
-        quick(a, j + 1, last);
+    printf("\nSorted array by Bubble sort in child process = ");
+    for(int i = 0;i<n;i++){
+      printf("%d ",arr[i]);
     }
-}
-
-void printArr(int a[], int n)
-{
-    int i;
-    printf("Sorted Array: ");
-    for (i = 0; i < n; i++)
-        printf("%d ", a[i]);
     printf("\n");
 }
 
-int main()
-{
-    int n;
-    printf("Enter size of array: ");
-    scanf("%d", &n);
-    int arr[n];
-    for (int i = 0; i < n; i++)
-    {
-        printf("Enter array item %d: ", i + 1);
-        scanf("%d", &arr[i]);
+void selectionSort(int arr[], int n){
+ int  min_idx;
+    for (int i = 0; i < n-1; i++){
+        min_idx = i;
+        for (int j = i+1; j < n; j++)
+        if (arr[j] < arr[min_idx])
+            min_idx = j;
+        if(min_idx!=i){
+            int temp = arr[min_idx];
+            arr[min_idx] = arr[i];
+            arr[i] = temp;
+        }
     }
+    printf("\nSorted array by Selection sort in parent process = ");
+    for(int i = 0;i<n;i++){
+      printf("%d ",arr[i]);
+    }
+    printf("\n");
+}
 
-    // A C program to demonstrate Zombie Process.
-    // Child becomes Zombie as parent is sleeping
-    // when child process exits.
-    int pid;
-    pid = fork();
-    if (pid == 0)
-    {
-        printf("Child process with id %d\n", getpid());
-        quick(arr, 0, n - 1);
-        printArr(arr, n);
-    }
-    else
-    {
-        int stc = 50;
-        wait(&stc);
-        printf("Parent process with id %d\n", getpid());
-    }
-
-    return 0;
+int main(){
+  pid_t pid;
+  int n;
+  printf("Enter the number of Elements = ");
+  scanf("%d",&n);
+  int arr[n];
+  printf("Enter the array = ");
+  for(int i = 0;i<n;i++) scanf("%d",&arr[i]);
+  pid = fork();
+  if(pid==0){
+  printf("\n****** CHILD PROCESS ********\n");
+    printf("\nIt is child process with pid = %d and ppid = %d \n",getpid(),getppid());
+    bubbleSort(arr,n);
+    printf("\n ***** CHILD PROCESS TERMINATED *****");
+  }
+  else{
+  wait(NULL);
+     printf("\n\n\n****** Parent PROCESS ********\n");
+    printf("\nIt is parent process with pid = %d and ppid = %d \n",getpid(),getppid());
+    selectionSort(arr,n);
+    printf("\n ***** PARENT PROCESS TERMINATED *****");
+  }
 }
